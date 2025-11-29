@@ -1,0 +1,55 @@
+{
+    "model_name": "Decision Tree",
+    "features": [
+        "Gender",
+        "Age",
+        "Occupation",
+        "Sleep Duration",
+        "Physical Activity Level",
+        "Stress Level",
+        "BMI Category",
+        "Heart Rate",
+        "Daily Steps",
+        "Sleep Disorder",
+        "Systolic_BP",
+        "Diastolic_BP"
+    ],
+    "categorical_columns": [
+        "Gender",
+        "Occupation",
+        "BMI Category",
+        "Sleep Disorder"
+    ],
+    "results": {
+        "Linear Regression": {
+            "RMSE": 0.2321,
+            "MAE": 0.1795,
+            "R2": 0.9643,
+            "CV_R2": 0.9369
+        },
+        "Decision Tree": {
+            "RMSE": 0.0,
+            "MAE": 0.0,
+            "R2": 1.0,
+            "CV_R2": 0.9625
+        },
+        "Random Forest": {
+            "RMSE": 0.1339,
+            "MAE": 0.0415,
+            "R2": 0.9881,
+            "CV_R2": 0.9724
+        },
+        "Gradient Boosting": {
+            "RMSE": 0.074,
+            "MAE": 0.0231,
+            "R2": 0.9964,
+            "CV_R2": 0.9721
+        }
+    },
+    "best_metrics": {
+        "RMSE": 0.0,
+        "MAE": 0.0,
+        "R2": 1.0,
+        "CV_R2": 0.9625
+    }
+}
