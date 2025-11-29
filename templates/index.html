@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamMetrics - Sleep Quality Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            opacity: 0.95;
+        }
+
+        .model-info {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .model-info span {
+            font-weight: 600;
+            color: #ffd700;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-predict {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-predict:active {
+            transform: translateY(0);
+        }
+
+        .btn-predict:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            animation: slideIn 0.5s ease;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .result .score {
+            font-size: 4rem;
+            font-weight: 700;
+            margin: 20px 0;
+        }
+
+        .result .message {
+            font-size: 1.1rem;
+            margin-top: 15px;
+            opacity: 0.9;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 25px;
+            }
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: #f3f4f6;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌙 DreamMetrics</h1>
+            <p class="subtitle">AI-Powered Sleep Quality Prediction</p>
+        </div>
+
+        <div class="model-info">
+            Model: <span>{{ model_info.model_name }}</span> | 
+            R² Score: <span>{{ model_info.best_metrics.R2 }}</span> | 
+            RMSE: <span>{{ model_info.best_metrics.RMSE }}</span>
+        </div>
+
+        <div class="card">
+            <form id="predictionForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" name="age" min="18" max="100" required placeholder="e.g., 28">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="occupation">Occupation</label>
+                        <select id="occupation" name="occupation" required>
+                            <option value="">Select Occupation</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sleep_duration">Sleep Duration (hours)</label>
+                        <input type="number" id="sleep_duration" name="sleep_duration" min="3" max="12" step="0.1" required placeholder="e.g., 7.5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="physical_activity">Physical Activity Level (min/day)</label>
+                        <input type="number" id="physical_activity" name="physical_activity" min="0" max="180" required placeholder="e.g., 60">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stress_level">Stress Level (1-10)</label>
+                        <input type="number" id="stress_level" name="stress_level" min="1" max="10" required placeholder="e.g., 5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bmi_category">BMI Category</label>
+                        <select id="bmi_category" name="bmi_category" required>
+                            <option value="">Select BMI Category</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="heart_rate">Heart Rate (bpm)</label>
+                        <input type="number" id="heart_rate" name="heart_rate" min="40" max="120" required placeholder="e.g., 75">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="daily_steps">Daily Steps</label>
+                        <input type="number" id="daily_steps" name="daily_steps" min="0" max="30000" required placeholder="e.g., 8000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sleep_disorder">Sleep Disorder</label>
+                        <select id="sleep_disorder" name="sleep_disorder" required>
+                            <option value="">Select Sleep Disorder</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="systolic_bp">Systolic BP (mmHg)</label>
+                        <input type="number" id="systolic_bp" name="systolic_bp" min="80" max="200" required placeholder="e.g., 120">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="diastolic_bp">Diastolic BP (mmHg)</label>
+                        <input type="number" id="diastolic_bp" name="diastolic_bp" min="50" max="130" required placeholder="e.g., 80">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-predict" id="predictBtn">
+                    Predict Sleep Quality
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px; color: #6b7280;">Analyzing your data...</p>
+            </div>
+
+            <div class="result" id="result">
+                <h2>Your Sleep Quality Score</h2>
+                <div class="score" id="scoreValue">-</div>
+                <div style="font-size: 1.3rem; font-weight: 600; margin-bottom: 10px;" id="qualityText">-</div>
+                <div class="message" id="messageText">-</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load dropdown options on page load
+        fetch('/get_options')
+            .then(response => response.json())
+            .then(data => {
+                // Populate occupation dropdown
+                const occupationSelect = document.getElementById('occupation');
+                data.occupations.forEach(occupation => {
+                    const option = document.createElement('option');
+                    option.value = occupation;
+                    option.textContent = occupation;
+                    occupationSelect.appendChild(option);
+                });
+
+                // Populate BMI category dropdown
+                const bmiSelect = document.getElementById('bmi_category');
+                data.bmi_categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    bmiSelect.appendChild(option);
+                });
+
+                // Populate sleep disorder dropdown
+                const disorderSelect = document.getElementById('sleep_disorder');
+                data.sleep_disorders.forEach(disorder => {
+                    const option = document.createElement('option');
+                    option.value = disorder;
+                    option.textContent = disorder;
+                    disorderSelect.appendChild(option);
+                });
+            });
+
+        // Handle form submission
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Get form data
+            const formData = {
+                gender: document.getElementById('gender').value,
+                age: document.getElementById('age').value,
+                occupation: document.getElementById('occupation').value,
+                sleep_duration: document.getElementById('sleep_duration').value,
+                physical_activity: document.getElementById('physical_activity').value,
+                stress_level: document.getElementById('stress_level').value,
+                bmi_category: document.getElementById('bmi_category').value,
+                heart_rate: document.getElementById('heart_rate').value,
+                daily_steps: document.getElementById('daily_steps').value,
+                sleep_disorder: document.getElementById('sleep_disorder').value,
+                systolic_bp: document.getElementById('systolic_bp').value,
+                diastolic_bp: document.getElementById('diastolic_bp').value
+            };
+
+            // Show loading
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('result').classList.remove('show');
+            document.getElementById('predictBtn').disabled = true;
+
+            try {
+                // Make prediction request
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                // Hide loading
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('predictBtn').disabled = false;
+
+                if (result.success) {
+                    // Show result
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.style.background = `linear-gradient(135deg, ${result.color}22 0%, ${result.color}44 100%)`;
+                    resultDiv.style.border = `2px solid ${result.color}`;
+                    
+                    document.getElementById('scoreValue').textContent = result.prediction;
+                    document.getElementById('scoreValue').style.color = result.color;
+                    document.getElementById('qualityText').textContent = result.quality;
+                    document.getElementById('qualityText').style.color = result.color;
+                    document.getElementById('messageText').textContent = result.message;
+                    
+                    resultDiv.classList.add('show');
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('predictBtn').disabled = false;
+                alert('Error making prediction. Please try again.');
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
