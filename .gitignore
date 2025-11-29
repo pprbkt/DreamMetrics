@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.so
+.env
+venv/
+.vscode/
+*.csv
+*.pkl
+firebase-credentials.json
+models_all.pkl
+model.pkl
+scaler.pkl
+label_encoders.pkl
