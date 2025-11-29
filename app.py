@@ -195,6 +195,246 @@ def predict():
         # Get model metrics
         model_metrics = model_info['results'][selected_model_name]
         
+        # ============ NEW: Generate Detailed Breakdown ============
+        
+        # Sleep Duration Analysis
+        sleep_status = "Optimal"
+        sleep_score = 100
+        sleep_recommendation = "You're getting the recommended amount of sleep. Great job!"
+        
+        if sleep_duration < 6:
+            sleep_status = "Too Short"
+            sleep_score = 40
+            sleep_recommendation = f"You're sleeping only {sleep_duration} hours. Aim for 7-9 hours for optimal health."
+        elif sleep_duration < 7:
+            sleep_status = "Below Optimal"
+            sleep_score = 70
+            sleep_recommendation = f"Try to increase your sleep by {round(7 - sleep_duration, 1)} hours for better rest."
+        elif sleep_duration > 9:
+            sleep_status = "Too Long"
+            sleep_score = 75
+            sleep_recommendation = "Oversleeping can also affect sleep quality. Aim for 7-9 hours."
+        
+        # Lifestyle Score (Activity + Stress + Steps)
+        lifestyle_score = 0
+        lifestyle_recommendations = []
+        
+        # Physical Activity
+        if physical_activity >= 30:
+            lifestyle_score += 35
+            activity_status = "Good"
+        else:
+            activity_status = "Low"
+            lifestyle_recommendations.append(f"Increase physical activity to 30-60 min/day (currently {physical_activity} min)")
+            lifestyle_score += (physical_activity / 30) * 35
+        
+        # Stress Level
+        if stress_level <= 3:
+            lifestyle_score += 35
+            stress_status = "Low"
+        elif stress_level <= 6:
+            lifestyle_score += 20
+            stress_status = "Moderate"
+            lifestyle_recommendations.append(f"Your stress level is {stress_level}/10. Try meditation or relaxation techniques.")
+        else:
+            stress_status = "High"
+            lifestyle_recommendations.append(f"High stress ({stress_level}/10) significantly impacts sleep. Consider stress management strategies.")
+            lifestyle_score += 10
+        
+        # Daily Steps
+        if daily_steps >= 8000:
+            lifestyle_score += 30
+            steps_status = "Excellent"
+        elif daily_steps >= 5000:
+            lifestyle_score += 20
+            steps_status = "Good"
+        else:
+            steps_status = "Low"
+            lifestyle_recommendations.append(f"Increase daily steps to 8,000-10,000 (currently {daily_steps})")
+            lifestyle_score += (daily_steps / 8000) * 30
+        
+        # Health Metrics Score (Heart Rate + Blood Pressure + BMI)
+        health_score = 0
+        health_recommendations = []
+        
+        # Heart Rate
+        if 60 <= heart_rate <= 80:
+            health_score += 40
+            hr_status = "Normal"
+        elif 50 <= heart_rate < 60 or 80 < heart_rate <= 90:
+            health_score += 25
+            hr_status = "Borderline"
+            health_recommendations.append(f"Heart rate is {heart_rate} bpm. Consider monitoring regularly.")
+        else:
+            hr_status = "Concerning"
+            health_recommendations.append(f"Heart rate ({heart_rate} bpm) is outside normal range. Consult a healthcare provider.")
+            health_score += 10
+        
+        # Blood Pressure
+        if systolic_bp < 120 and diastolic_bp < 80:
+            health_score += 40
+            bp_status = "Normal"
+        elif systolic_bp < 130 and diastolic_bp < 85:
+            health_score += 25
+            bp_status = "Elevated"
+            health_recommendations.append("Blood pressure is slightly elevated. Monitor regularly.")
+        else:
+            bp_status = "High"
+            health_recommendations.append("Blood pressure is high. Consult a healthcare provider.")
+            health_score += 10
+        
+        # BMI
+        if bmi_category in ["Normal", "Normal Weight"]:
+            health_score += 20
+            bmi_status = "Healthy"
+        elif bmi_category == "Overweight":
+            health_score += 12
+            bmi_status = "Overweight"
+            health_recommendations.append("BMI indicates overweight. Consider balanced diet and exercise.")
+        else:
+            bmi_status = bmi_category
+            health_recommendations.append(f"BMI category: {bmi_category}. Consult a healthcare provider for personalized advice.")
+            health_score += 8
+        
+        # Sleep Disorder Impact
+        disorder_impact = "None"
+        disorder_recommendation = ""
+        if sleep_disorder != "None":
+            disorder_impact = sleep_disorder
+            disorder_recommendation = f"You have {sleep_disorder}. This significantly affects sleep quality. Follow your doctor's treatment plan."
+        
+        # Generate Priority Recommendations
+        critical_recommendations = []
+        improvement_recommendations = []
+        good_habits = []
+        
+        # Critical (Red flags)
+        if sleep_duration < 6:
+            critical_recommendations.append({
+                'category': 'Sleep Duration',
+                'value': f'{sleep_duration} hours',
+                'recommendation': 'Increase sleep by at least 1-2 hours'
+            })
+        
+        if stress_level >= 7:
+            critical_recommendations.append({
+                'category': 'Stress Level',
+                'value': f'{stress_level}/10',
+                'recommendation': 'High stress - try meditation, yoga, or therapy'
+            })
+        
+        if systolic_bp >= 130 or diastolic_bp >= 85:
+            critical_recommendations.append({
+                'category': 'Blood Pressure',
+                'value': f'{systolic_bp}/{diastolic_bp}',
+                'recommendation': 'Consult a doctor about blood pressure management'
+            })
+        
+        # Needs Improvement (Yellow flags)
+        if 6 <= sleep_duration < 7:
+            improvement_recommendations.append({
+                'category': 'Sleep Duration',
+                'value': f'{sleep_duration} hours',
+                'recommendation': f'Add {round(7.5 - sleep_duration, 1)} more hours for optimal sleep'
+            })
+        
+        if physical_activity < 30:
+            improvement_recommendations.append({
+                'category': 'Physical Activity',
+                'value': f'{physical_activity} min/day',
+                'recommendation': 'Aim for 30-60 minutes of daily exercise'
+            })
+        
+        if daily_steps < 8000:
+            improvement_recommendations.append({
+                'category': 'Daily Steps',
+                'value': f'{daily_steps} steps',
+                'recommendation': 'Target 8,000-10,000 steps per day'
+            })
+        
+        if 4 <= stress_level < 7:
+            improvement_recommendations.append({
+                'category': 'Stress Level',
+                'value': f'{stress_level}/10',
+                'recommendation': 'Practice stress-reduction techniques regularly'
+            })
+        
+        # Good Habits (Green - keep doing)
+        if sleep_duration >= 7 and sleep_duration <= 9:
+            good_habits.append({
+                'category': 'Sleep Duration',
+                'value': f'{sleep_duration} hours',
+                'note': 'Perfect sleep duration!'
+            })
+        
+        if physical_activity >= 30:
+            good_habits.append({
+                'category': 'Physical Activity',
+                'value': f'{physical_activity} min/day',
+                'note': 'Great activity level!'
+            })
+        
+        if daily_steps >= 8000:
+            good_habits.append({
+                'category': 'Daily Steps',
+                'value': f'{daily_steps} steps',
+                'note': 'Excellent daily movement!'
+            })
+        
+        if stress_level <= 3:
+            good_habits.append({
+                'category': 'Stress Level',
+                'value': f'{stress_level}/10',
+                'note': 'Well-managed stress!'
+            })
+        
+        if 60 <= heart_rate <= 80:
+            good_habits.append({
+                'category': 'Heart Rate',
+                'value': f'{heart_rate} bpm',
+                'note': 'Healthy heart rate!'
+            })
+        
+        if systolic_bp < 120 and diastolic_bp < 80:
+            good_habits.append({
+                'category': 'Blood Pressure',
+                'value': f'{systolic_bp}/{diastolic_bp}',
+                'note': 'Optimal blood pressure!'
+            })
+        
+        # Breakdown data
+        breakdown = {
+            'sleep': {
+                'score': round(sleep_score),
+                'status': sleep_status,
+                'recommendation': sleep_recommendation
+            },
+            'lifestyle': {
+                'score': round(lifestyle_score),
+                'activity_status': activity_status,
+                'stress_status': stress_status,
+                'steps_status': steps_status,
+                'recommendations': lifestyle_recommendations
+            },
+            'health': {
+                'score': round(health_score),
+                'hr_status': hr_status,
+                'bp_status': bp_status,
+                'bmi_status': bmi_status,
+                'recommendations': health_recommendations
+            },
+            'disorder': {
+                'impact': disorder_impact,
+                'recommendation': disorder_recommendation
+            }
+        }
+        
+        recommendations = {
+            'critical': critical_recommendations,
+            'improvement': improvement_recommendations,
+            'good_habits': good_habits
+        }
+        
         # Save prediction to Firestore
         prediction_data = {
             'user_id': user_id,
@@ -202,6 +442,8 @@ def predict():
             'model_used': selected_model_name,
             'prediction': prediction,
             'quality': quality,
+            'breakdown': breakdown,
+            'recommendations': recommendations,
             'input_data': {
                 'gender': gender,
                 'age': age,
@@ -227,7 +469,9 @@ def predict():
             'message': message,
             'color': color,
             'model_used': selected_model_name,
-            'model_metrics': model_metrics
+            'model_metrics': model_metrics,
+            'breakdown': breakdown,
+            'recommendations': recommendations
         })
         
     except Exception as e:
@@ -235,6 +479,7 @@ def predict():
             'success': False,
             'error': str(e)
         })
+
 
 @app.route('/get_options')
 def get_options():

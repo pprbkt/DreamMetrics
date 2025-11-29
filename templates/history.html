@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prediction History - DreamMetrics</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>History - DreamMetrics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,70 +14,70 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0f0f0f;
             min-height: 100vh;
             padding: 20px;
-            color: #333;
+            color: #fff;
         }
 
         .top-nav {
             max-width: 1200px;
-            margin: 0 auto 20px;
+            margin: 0 auto 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 15px 25px;
-            border-radius: 15px;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #1a1a1a;
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 1px solid #2a2a2a;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .user-email {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
+            color: #a0a0a0;
         }
 
         .nav-links {
             display: flex;
-            gap: 15px;
+            gap: 8px;
             align-items: center;
         }
 
         .nav-links a {
-            color: white;
+            color: #fff;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             padding: 8px 16px;
             border-radius: 8px;
             transition: all 0.3s ease;
+            font-size: 0.85rem;
         }
 
         .nav-links a:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: #2a2a2a;
         }
 
         .btn-logout {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: #2a2a2a;
+            color: #fff;
+            border: 1px solid #3a3a3a;
             padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-size: 0.85rem;
+            font-weight: 600;
             transition: all 0.3s ease;
         }
 
         .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: #3a3a3a;
         }
 
         .container {
@@ -87,104 +87,121 @@
 
         .header {
             text-align: center;
-            color: white;
             margin-bottom: 40px;
-            animation: fadeInDown 0.8s ease;
+            animation: fadeInDown 0.6s ease;
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #5B8FF9 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
         }
 
         .header .subtitle {
-            font-size: 1.1rem;
-            font-weight: 300;
-            opacity: 0.95;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #a0a0a0;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 28px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: fadeInUp 0.8s ease;
+            animation: fadeInUp 0.6s ease;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: #5B8FF9;
+            transform: translateY(-2px);
         }
 
         .stat-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 5px;
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #5B8FF9 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
         }
 
         .stat-label {
-            font-size: 0.9rem;
-            color: #6b7280;
-            font-weight: 500;
+            font-size: 0.8rem;
+            color: #a0a0a0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .history-card {
-            background: white;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: fadeInUp 0.8s ease;
+            animation: fadeInUp 0.6s ease;
         }
 
         .history-card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-            color: #374151;
+            font-size: 1.6rem;
+            margin-bottom: 28px;
+            color: #fff;
+            font-weight: 700;
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: #6b7280;
+            padding: 80px 20px;
+            color: #a0a0a0;
         }
 
         .empty-state-icon {
             font-size: 4rem;
             margin-bottom: 20px;
-            opacity: 0.5;
+            opacity: 0.3;
         }
 
         .empty-state h3 {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             margin-bottom: 10px;
-            color: #374151;
+            color: #fff;
+            font-weight: 700;
         }
 
         .empty-state p {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
         }
 
         .btn-primary {
             display: inline-block;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 13px 28px;
+            background: linear-gradient(135deg, #5B8FF9 0%, #8B5CF6 100%);
             color: white;
             text-decoration: none;
             border-radius: 10px;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px rgba(91, 143, 249, 0.4);
         }
 
         .prediction-list {
@@ -193,50 +210,51 @@
         }
 
         .prediction-item {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 20px;
+            background: #0f0f0f;
+            border: 1.5px solid #2a2a2a;
+            border-radius: 14px;
+            padding: 24px;
             transition: all 0.3s ease;
         }
 
         .prediction-item:hover {
-            border-color: #667eea;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+            border-color: #5B8FF9;
+            transform: translateY(-2px);
         }
 
         .prediction-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
         }
 
         .prediction-score {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 2.2rem;
+            font-weight: 800;
         }
 
         .prediction-quality {
             font-size: 1.1rem;
-            font-weight: 600;
-            margin-left: 15px;
+            font-weight: 700;
+            margin-left: 12px;
         }
 
         .prediction-date {
-            color: #6b7280;
-            font-size: 0.9rem;
+            color: #a0a0a0;
+            font-size: 0.8rem;
+            font-weight: 500;
         }
 
         .prediction-details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #e5e7eb;
+            gap: 14px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #2a2a2a;
         }
 
         .detail-item {
@@ -244,30 +262,31 @@
         }
 
         .detail-label {
-            color: #6b7280;
+            color: #a0a0a0;
             font-weight: 500;
         }
 
         .detail-value {
-            color: #374151;
-            font-weight: 600;
-            margin-left: 5px;
+            color: #fff;
+            font-weight: 700;
+            margin-left: 6px;
         }
 
         .model-badge {
             display: inline-block;
-            background: #667eea;
+            background: linear-gradient(135deg, #5B8FF9 0%, #8B5CF6 100%);
             color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
         }
 
         @keyframes fadeInDown {
             from {
                 opacity: 0;
-                transform: translateY(-30px);
+                transform: translateY(-20px);
             }
             to {
                 opacity: 1;
@@ -278,7 +297,7 @@
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -292,7 +311,7 @@
             }
 
             .history-card {
-                padding: 25px;
+                padding: 28px 20px;
             }
 
             .prediction-header {
@@ -307,6 +326,10 @@
             .top-nav {
                 flex-direction: column;
                 gap: 10px;
+            }
+
+            .stat-value {
+                font-size: 2.2rem;
             }
         }
     </style>
@@ -325,7 +348,7 @@
 
     <div class="container">
         <div class="header">
-            <h1>📊 Prediction History</h1>
+            <h1>Your Sleep Journey</h1>
             <p class="subtitle">Track your sleep quality over time</p>
         </div>
 
@@ -349,7 +372,7 @@
         {% endif %}
 
         <div class="history-card">
-            <h2>Your Predictions</h2>
+            <h2>Prediction History</h2>
 
             {% if predictions %}
             <div class="prediction-list">
@@ -358,23 +381,23 @@
                     <div class="prediction-header">
                         <div>
                             <span class="prediction-score" style="color: 
-                                {% if pred.prediction >= 8 %}#10b981
-                                {% elif pred.prediction >= 7 %}#3b82f6
-                                {% elif pred.prediction >= 6 %}#f59e0b
-                                {% else %}#ef4444{% endif %};">
+                                {% if pred.prediction >= 8 %}#51cf66
+                                {% elif pred.prediction >= 7 %}#5B8FF9
+                                {% elif pred.prediction >= 6 %}#ffba08
+                                {% else %}#ff6b6b{% endif %};">
                                 {{ pred.prediction }}
                             </span>
                             <span class="prediction-quality" style="color: 
-                                {% if pred.prediction >= 8 %}#10b981
-                                {% elif pred.prediction >= 7 %}#3b82f6
-                                {% elif pred.prediction >= 6 %}#f59e0b
-                                {% else %}#ef4444{% endif %};">
+                                {% if pred.prediction >= 8 %}#51cf66
+                                {% elif pred.prediction >= 7 %}#5B8FF9
+                                {% elif pred.prediction >= 6 %}#ffba08
+                                {% else %}#ff6b6b{% endif %};">
                                 {{ pred.quality }}
                             </span>
                         </div>
                         <div>
                             <span class="model-badge">{{ pred.model_used }}</span>
-                            <div class="prediction-date">
+                            <div class="prediction-date" style="margin-top: 8px;">
                                 {% if pred.timestamp %}
                                     {{ pred.timestamp.strftime('%B %d, %Y at %I:%M %p') if pred.timestamp else 'Recently' }}
                                 {% else %}
@@ -394,15 +417,15 @@
                             <span class="detail-value">{{ pred.input_data.gender }}</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Sleep Duration:</span>
+                            <span class="detail-label">Sleep:</span>
                             <span class="detail-value">{{ pred.input_data.sleep_duration }}h</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Physical Activity:</span>
-                            <span class="detail-value">{{ pred.input_data.physical_activity }} min/day</span>
+                            <span class="detail-label">Activity:</span>
+                            <span class="detail-value">{{ pred.input_data.physical_activity }} min</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Stress Level:</span>
+                            <span class="detail-label">Stress:</span>
                             <span class="detail-value">{{ pred.input_data.stress_level }}/10</span>
                         </div>
                         <div class="detail-item">
@@ -410,11 +433,11 @@
                             <span class="detail-value">{{ pred.input_data.heart_rate }} bpm</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Daily Steps:</span>
+                            <span class="detail-label">Steps:</span>
                             <span class="detail-value">{{ pred.input_data.daily_steps }}</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Blood Pressure:</span>
+                            <span class="detail-label">BP:</span>
                             <span class="detail-value">{{ pred.input_data.systolic_bp }}/{{ pred.input_data.diastolic_bp }}</span>
                         </div>
                     </div>
@@ -423,10 +446,10 @@
             </div>
             {% else %}
             <div class="empty-state">
-                <div class="empty-state-icon">😴</div>
-                <h3>No predictions yet</h3>
-                <p>Start tracking your sleep quality by making your first prediction!</p>
-                <a href="/home" class="btn-primary">Make Your First Prediction</a>
+                <div class="empty-state-icon">🌙</div>
+                <h3>No Predictions Yet</h3>
+                <p>Start tracking your sleep quality</p>
+                <a href="/home" class="btn-primary">Make First Prediction</a>
             </div>
             {% endif %}
         </div>

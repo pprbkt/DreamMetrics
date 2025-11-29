@@ -38,18 +38,11 @@
             "MAE": 0.0415,
             "R2": 0.9881,
             "CV_R2": 0.9724
-        },
-        "Gradient Boosting": {
-            "RMSE": 0.074,
-            "MAE": 0.0231,
-            "R2": 0.9964,
-            "CV_R2": 0.9721
         }
     },
     "model_names": [
         "Linear Regression",
         "Decision Tree",
-        "Random Forest",
-        "Gradient Boosting"
+        "Random Forest"
     ]
 }
