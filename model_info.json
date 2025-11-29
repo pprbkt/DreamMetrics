@@ -1,5 +1,5 @@
 {
-    "model_name": "Decision Tree",
+    "best_model_name": "Decision Tree",
     "features": [
         "Gender",
         "Age",
@@ -46,10 +46,10 @@
             "CV_R2": 0.9721
         }
     },
-    "best_metrics": {
-        "RMSE": 0.0,
-        "MAE": 0.0,
-        "R2": 1.0,
-        "CV_R2": 0.9625
-    }
+    "model_names": [
+        "Linear Regression",
+        "Decision Tree",
+        "Random Forest",
+        "Gradient Boosting"
+    ]
 }
