@@ -5,8 +5,8 @@ import json
 
 app = Flask(__name__)
 
-# Load the trained model and preprocessing objects
-model = joblib.load('model.pkl')
+# Load all trained models and preprocessing objects
+models_all = joblib.load('models_all.pkl')
 scaler = joblib.load('scaler.pkl')
 label_encoders = joblib.load('label_encoders.pkl')
 
@@ -16,8 +16,8 @@ with open('model_info.json', 'r') as f:
 
 print("=" * 60)
 print("DREAMMETRICS - Flask App Started")
-print(f"Model: {model_info['model_name']}")
-print(f"R2 Score: {model_info['best_metrics']['R2']}")
+print(f"Models loaded: {', '.join(models_all.keys())}")
+print(f"Best Model: {model_info['best_model_name']}")
 print("=" * 60)
 
 @app.route('/')
@@ -29,6 +29,10 @@ def predict():
     try:
         # Get data from form
         data = request.get_json()
+        
+        # Get selected model (default to best model)
+        selected_model_name = data.get('model_name', model_info['best_model_name'])
+        model = models_all[selected_model_name]
         
         # Extract features in correct order
         gender = data['gender']
@@ -93,12 +97,17 @@ def predict():
             message = "Your sleep quality needs attention. Focus on improving sleep hygiene."
             color = "#ef4444"
         
+        # Get model metrics
+        model_metrics = model_info['results'][selected_model_name]
+        
         return jsonify({
             'success': True,
             'prediction': prediction,
             'quality': quality,
             'message': message,
-            'color': color
+            'color': color,
+            'model_used': selected_model_name,
+            'model_metrics': model_metrics
         })
         
     except Exception as e:
@@ -113,7 +122,9 @@ def get_options():
     options = {
         'occupations': label_encoders['Occupation'].classes_.tolist(),
         'bmi_categories': label_encoders['BMI Category'].classes_.tolist(),
-        'sleep_disorders': label_encoders['Sleep Disorder'].classes_.tolist()
+        'sleep_disorders': label_encoders['Sleep Disorder'].classes_.tolist(),
+        'models': model_info['model_names'],
+        'model_results': model_info['results']
     }
     return jsonify(options)
 

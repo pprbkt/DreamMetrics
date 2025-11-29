@@ -85,9 +85,9 @@ models = {
 }
 
 results = {}
-best_model = None
-best_score = -float('inf')
+trained_models = {}
 best_model_name = ""
+best_score = -float('inf')
 
 for name, model in models.items():
     print(f"\n-> Training {name}...")
@@ -115,6 +115,9 @@ for name, model in models.items():
         'CV_R2': round(cv_mean, 4)
     }
     
+    # Save trained model
+    trained_models[name] = model
+    
     print(f"  RMSE: {rmse:.4f}")
     print(f"  MAE:  {mae:.4f}")
     print(f"  R2:   {r2:.4f}")
@@ -123,31 +126,31 @@ for name, model in models.items():
     # Track best model
     if r2 > best_score:
         best_score = r2
-        best_model = model
         best_model_name = name
 
-# Save best model and preprocessing objects
+# Save all trained models
 print("\n" + "=" * 80)
 print(f"BEST MODEL: {best_model_name} (R2 = {best_score:.4f})")
 print("=" * 80)
 
-joblib.dump(best_model, 'model.pkl')
+# Save all models
+joblib.dump(trained_models, 'models_all.pkl')
 joblib.dump(scaler, 'scaler.pkl')
 joblib.dump(label_encoders, 'label_encoders.pkl')
 
-# Save feature names and model info
+# Save model info
 model_info = {
-    'model_name': best_model_name,
+    'best_model_name': best_model_name,
     'features': list(X.columns),
     'categorical_columns': categorical_columns,
     'results': results,
-    'best_metrics': results[best_model_name]
+    'model_names': list(models.keys())
 }
 
 with open('model_info.json', 'w') as f:
     json.dump(model_info, f, indent=4)
 
-print("\n[OK] Model saved: model.pkl")
+print("\n[OK] All models saved: models_all.pkl")
 print("[OK] Scaler saved: scaler.pkl")
 print("[OK] Label encoders saved: label_encoders.pkl")
 print("[OK] Model info saved: model_info.json")

@@ -52,13 +52,86 @@
             padding: 15px 25px;
             color: white;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .model-info span {
             font-weight: 600;
             color: #ffd700;
+        }
+
+        .model-selector {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .model-selector h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .model-option {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .model-option:hover {
+            border-color: #667eea;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .model-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea11 0%, #764ba222 100%);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .model-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .model-option label {
+            cursor: pointer;
+            display: block;
+            margin: 0;
+        }
+
+        .model-name {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .model-metrics {
+            font-size: 0.8rem;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .model-metrics div {
+            margin: 2px 0;
         }
 
         .card {
@@ -168,6 +241,14 @@
             opacity: 0.9;
         }
 
+        .result .model-used {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
         .loading {
             display: none;
             text-align: center;
@@ -238,16 +319,10 @@
             .card {
                 padding: 25px;
             }
-        }
 
-        .info-badge {
-            display: inline-block;
-            background: #f3f4f6;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: #6b7280;
-            margin-top: 5px;
+            .model-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -259,9 +334,14 @@
         </div>
 
         <div class="model-info">
-            Model: <span>{{ model_info.model_name }}</span> | 
-            R² Score: <span>{{ model_info.best_metrics.R2 }}</span> | 
-            RMSE: <span>{{ model_info.best_metrics.RMSE }}</span>
+            Best Model: <span>{{ model_info.best_model_name }}</span>
+        </div>
+
+        <div class="model-selector">
+            <h3>🤖 Select ML Model</h3>
+            <div class="model-grid" id="modelGrid">
+                <!-- Models will be loaded here dynamically -->
+            </div>
         </div>
 
         <div class="card">
@@ -353,11 +433,14 @@
                 <div class="score" id="scoreValue">-</div>
                 <div style="font-size: 1.3rem; font-weight: 600; margin-bottom: 10px;" id="qualityText">-</div>
                 <div class="message" id="messageText">-</div>
+                <div class="model-used" id="modelUsed">-</div>
             </div>
         </div>
     </div>
 
     <script>
+        let selectedModel = '{{ model_info.best_model_name }}';
+
         // Load dropdown options on page load
         fetch('/get_options')
             .then(response => response.json())
@@ -388,6 +471,36 @@
                     option.textContent = disorder;
                     disorderSelect.appendChild(option);
                 });
+
+                // Populate model selector
+                const modelGrid = document.getElementById('modelGrid');
+                data.models.forEach((modelName, index) => {
+                    const metrics = data.model_results[modelName];
+                    const isBest = modelName === '{{ model_info.best_model_name }}';
+                    
+                    const modelOption = document.createElement('div');
+                    modelOption.className = 'model-option' + (isBest ? ' selected' : '');
+                    modelOption.innerHTML = `
+                        <input type="radio" name="model" id="model_${index}" value="${modelName}" ${isBest ? 'checked' : ''}>
+                        <label for="model_${index}">
+                            <div class="model-name">${modelName} ${isBest ? '⭐' : ''}</div>
+                            <div class="model-metrics">
+                                <div>R²: ${metrics.R2}</div>
+                                <div>RMSE: ${metrics.RMSE}</div>
+                                <div>MAE: ${metrics.MAE}</div>
+                            </div>
+                        </label>
+                    `;
+                    
+                    modelOption.addEventListener('click', function() {
+                        document.querySelectorAll('.model-option').forEach(opt => opt.classList.remove('selected'));
+                        modelOption.classList.add('selected');
+                        document.getElementById(`model_${index}`).checked = true;
+                        selectedModel = modelName;
+                    });
+                    
+                    modelGrid.appendChild(modelOption);
+                });
             });
 
         // Handle form submission
@@ -396,6 +509,7 @@
 
             // Get form data
             const formData = {
+                model_name: selectedModel,
                 gender: document.getElementById('gender').value,
                 age: document.getElementById('age').value,
                 occupation: document.getElementById('occupation').value,
@@ -442,6 +556,10 @@
                     document.getElementById('qualityText').textContent = result.quality;
                     document.getElementById('qualityText').style.color = result.color;
                     document.getElementById('messageText').textContent = result.message;
+                    document.getElementById('modelUsed').innerHTML = `
+                        <strong>Model Used:</strong> ${result.model_used}<br>
+                        <strong>Metrics:</strong> R² = ${result.model_metrics.R2}, RMSE = ${result.model_metrics.RMSE}, MAE = ${result.model_metrics.MAE}
+                    `;
                     
                     resultDiv.classList.add('show');
                 } else {
